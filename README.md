@@ -26,12 +26,16 @@ Replace demo files with your own game assets, models, and scripts.
 4. **Build & Run**
 Test in VR using your preferred headset.
 
+---
+
 ## 🛠 Requirements
 Unity 2021 or newer
 
 XR Plugin Management installed
 
 VR-compatible headset
+
+---
 
 ## 📄 License
 This project is licensed under the MIT License — feel free to use and modify it for personal or commercial projects.
