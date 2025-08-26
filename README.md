@@ -16,7 +16,7 @@ Simply clone the project, add your own assets and scripts, and you’re ready to
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Ristwak/vr-demo-project.git
+   https://github.com/Ristwak/VR-Demo-project.git
 2. **Open in Unity**
 Use the Unity version recommended for VR development (e.g., Unity 2021+ with XR Interaction Toolkit).
 
