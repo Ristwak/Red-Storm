@@ -3,7 +3,22 @@ guid: cf3c10d2e12be5a47880b5d852199cff
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: House_MT
+    second: {fileID: 2100000, guid: cee36931f4cff0541a1e9e1db2adab77, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Launching_Pad_Ring_MT
+    second: {fileID: 2100000, guid: 60ac92e262843964f8155428506c4744, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Space_ship
+    second: {fileID: 2100000, guid: 2916805dba698d9489dcd1c466f989c9, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
@@ -40,6 +55,7 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
