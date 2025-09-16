@@ -1,0 +1,92 @@
+{
+    "quizzes": [
+        {
+            "id": 1,
+            "question": "Why do Martian dust storms last longer than on Earth?",
+            "options": [
+                "No winds",
+                "Thin atmosphere & low gravity",
+                "High temperature",
+                "Lots of water"
+            ],
+            "correctIndex": 1
+        },
+        {
+            "id": 2,
+            "question": "What is the main danger of Martian dust storms for human explorers?",
+            "options": [
+                "Producing oxygen",
+                "Damaging electronics",
+                "Making water",
+                "Changing gravity"
+            ],
+            "correctIndex": 1
+        },
+        {
+            "id": 3,
+            "question": "How does gravity on Mars compare to Earth?",
+            "options": [
+                "Stronger than Earth",
+                "The same as Earth",
+                "Weaker than Earth",
+                "No gravity at all"
+            ],
+            "correctIndex": 2
+        },
+        {
+            "id": 4,
+            "question": "What gives Mars its red color?",
+            "options": [
+                "Lava flowing everywhere",
+                "Sunlight reflections",
+                "A red-colored atmosphere",
+                "Iron oxide (rust) on its surface"
+            ],
+            "correctIndex": 3
+        },
+        {
+            "id": 5,
+            "question": "How long is a day on Mars compared to Earth?",
+            "options": [
+                "Exactly 12 hours",
+                "About 24.6 hours",
+                "48 hours",
+                "6 hours"
+            ],
+            "correctIndex": 1
+        },
+        {
+            "id": 6,
+            "question": "What is the average temperature on Mars?",
+            "options": [
+                "100 \u00b0C",
+                "20 \u00b0C",
+                "-60 \u00b0C",
+                "-5 \u00b0C"
+            ],
+            "correctIndex": 2
+        },
+        {
+            "id": 7,
+            "question": "Which of these is the tallest volcano in the solar system, located on Mars?",
+            "options": [
+                "Mount Everest",
+                "Olympus Mons",
+                "Vesuvius",
+                "Mauna Kea"
+            ],
+            "correctIndex": 1
+        },
+        {
+            "id": 8,
+            "question": "What is the thin Martian atmosphere mostly made of?",
+            "options": [
+                "Oxygen",
+                "Carbon dioxide",
+                "Hydrogen",
+                "Nitrogen"
+            ],
+            "correctIndex": 1
+        }
+    ]
+}
