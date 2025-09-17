@@ -20,17 +20,16 @@ public class QuizCollection
 public class QuizLoader : MonoBehaviour
 {
     [Header("UI References")]
-    public TMP_Text questionText;      // TextMeshPro question field
-    public Button[] optionButtons;     // 4 buttons for answers
+    public TMP_Text questionText;       // TextMeshPro question field
+    public Button[] optionButtons;      // 4 buttons for answers
 
-    private Quiz[] shuffledQuizzes;    // shuffled array
+    private Quiz[] shuffledQuizzes;     // shuffled array
     private int currentIndex = 0;
 
     void Start()
     {
         LoadQuizData();
         ShuffleQuizzes();
-        ShowQuiz(currentIndex);
     }
 
     void LoadQuizData()
@@ -61,22 +60,28 @@ public class QuizLoader : MonoBehaviour
         }
     }
 
-    void ShowQuiz(int index)
+    /// <summary>
+    /// Called by GameManager when quiz should appear.
+    /// </summary>
+    public void ShowQuiz(int index)
     {
         if (shuffledQuizzes == null || index >= shuffledQuizzes.Length) return;
 
+        currentIndex = index;
         Quiz q = shuffledQuizzes[index];
 
-        // Set question
+        // Set question text
         questionText.text = q.question;
 
-        // Set answers
+        // Set answer options
         for (int i = 0; i < optionButtons.Length; i++)
         {
             int optionIndex = i; // local copy for lambda
             TMP_Text btnText = optionButtons[i].GetComponentInChildren<TMP_Text>();
-            if (btnText != null)
+            if (btnText != null && i < q.options.Length)
                 btnText.text = q.options[i];
+            else if (btnText != null)
+                btnText.text = "";
 
             optionButtons[i].onClick.RemoveAllListeners();
             optionButtons[i].onClick.AddListener(() => OnAnswerSelected(optionIndex));
@@ -87,19 +92,11 @@ public class QuizLoader : MonoBehaviour
     {
         Quiz q = shuffledQuizzes[currentIndex];
         if (chosenIndex == q.correctIndex)
-        {
             Debug.Log("✅ Correct!");
-        }
         else
-        {
             Debug.Log("❌ Wrong!");
-        }
 
-        // Load next question
-        currentIndex++;
-        if (currentIndex < shuffledQuizzes.Length)
-            ShowQuiz(currentIndex);
-        else
-            Debug.Log("All questions finished!");
+        Debug.Log("Question finished. Waiting for GameManager to decide what’s next.");
+        // Don’t auto-hide here — GameManager will call CloseQuiz().
     }
 }

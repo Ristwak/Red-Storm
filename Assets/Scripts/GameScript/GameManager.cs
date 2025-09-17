@@ -5,7 +5,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     [Header("Timer Settings")]
-    public float missionTime = 60f;          // total mission time in seconds
+    public float missionTime = 120f;          // total mission time in seconds
     private float timeRemaining;
     private bool isGameActive = true;
 
@@ -13,15 +13,18 @@ public class GameManager : MonoBehaviour
     public TMP_Text timerText;               // Timer display
     public GameObject quizPanel;             // Assign your quiz panel (disabled by default)
     public GameObject gameOverPanel;         // Assign your GameOver panel (disabled by default)
+    public QuizLoader quizLoader;            // Reference to QuizLoader component
 
     [Header("Quiz Settings")]
-    public int numberOfPopups = 2;           // how many times quiz will appear
-    private float[] quizTriggerTimes;        // times when quiz will appear
+    public float quiz1Time = 90f;            // when first quiz should appear (seconds left)
+    public float quiz2Time = 45f;            // when second quiz should appear (seconds left)
     private int quizIndex = 0;
+    private bool isQuizActive = false;
 
     [Header("Player References")]
-    public GameObject player;                // XR Rig or player root
-    public MonoBehaviour playerMovementScript; // movement script to disable on game over
+    public MonoBehaviour locomotionScript;   // movement script (leave hand scripts alone)
+
+    private float[] quizTriggerTimes;
 
     void Start()
     {
@@ -30,13 +33,9 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         quizPanel.SetActive(false);
 
-        // Pick random times for quiz popups
-        quizTriggerTimes = new float[numberOfPopups];
-        for (int i = 0; i < numberOfPopups; i++)
-        {
-            quizTriggerTimes[i] = Random.Range(missionTime * 0.2f, missionTime * 0.8f);
-        }
-        System.Array.Sort(quizTriggerTimes); // ensure they appear in order
+        // Assign quiz times from inspector
+        quizTriggerTimes = new float[2] { quiz1Time, quiz2Time };
+        System.Array.Sort(quizTriggerTimes); // keep them in order
     }
 
     void Update()
@@ -51,12 +50,16 @@ public class GameManager : MonoBehaviour
             GameOver();
         }
 
-        // Update UI
+        // Update UI with MM:SS format
         if (timerText != null)
-            timerText.text = "Time: " + Mathf.CeilToInt(timeRemaining).ToString();
+        {
+            int minutes = Mathf.FloorToInt(timeRemaining / 60);
+            int seconds = Mathf.FloorToInt(timeRemaining % 60);
+            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        }
 
-        // Trigger quizzes
-        if (quizIndex < quizTriggerTimes.Length && timeRemaining <= quizTriggerTimes[quizIndex])
+        // Trigger quizzes at your chosen times
+        if (!isQuizActive && quizIndex < quizTriggerTimes.Length && timeRemaining <= quizTriggerTimes[quizIndex])
         {
             ShowQuiz();
             quizIndex++;
@@ -65,14 +68,25 @@ public class GameManager : MonoBehaviour
 
     void ShowQuiz()
     {
+        isQuizActive = true;
         quizPanel.SetActive(true);
-        Time.timeScale = 0f; // pause gameplay while quiz is open
+
+        if (quizLoader != null)
+            quizLoader.ShowQuiz(quizIndex); // tell loader which quiz to show
+
+        // Disable locomotion only (hands still work)
+        if (locomotionScript != null)
+            locomotionScript.enabled = false;
     }
 
     public void CloseQuiz()
     {
+        isQuizActive = false;
         quizPanel.SetActive(false);
-        Time.timeScale = 1f; // resume gameplay
+
+        // Re-enable locomotion
+        if (locomotionScript != null)
+            locomotionScript.enabled = true;
     }
 
     public void GameOver()
@@ -82,12 +96,10 @@ public class GameManager : MonoBehaviour
         isGameActive = false;
         gameOverPanel.SetActive(true);
 
-        // Disable movement
-        if (playerMovementScript != null)
-            playerMovementScript.enabled = false;
+        if (locomotionScript != null)
+            locomotionScript.enabled = false;
     }
 
-    // Call this from Sandstorm script when it hits player
     public void PlayerHitByStorm()
     {
         Debug.Log("Player hit by storm!");

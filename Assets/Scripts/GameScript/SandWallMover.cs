@@ -3,16 +3,23 @@ using UnityEngine;
 public class SandWallMover : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public Transform target;      // usually the XR Rig (player)
-    public float minSpeed = 5f;   // minimum storm speed
-    public float maxSpeed = 15f;  // maximum storm speed
-    public float changeRate = 2f; // how fast speed changes
+    public Transform target;        // XR Rig (player)
+    public float minSpeed = 5f;     // minimum storm speed
+    public float maxSpeed = 15f;    // maximum storm speed
+    public float changeRate = 2f;   // how fast speed changes
 
     private float currentSpeed;
 
     void Start()
     {
-        // start with a random speed between min and max
+        if (target == null)
+        {
+            Debug.LogError("SandWallMover: No target assigned!");
+            enabled = false;
+            return;
+        }
+
+        // Start with a random speed
         currentSpeed = Random.Range(minSpeed, maxSpeed);
     }
 
@@ -20,14 +27,17 @@ public class SandWallMover : MonoBehaviour
     {
         if (target == null) return;
 
-        // Smoothly vary the speed up and down
-        float noise = Mathf.PerlinNoise(Time.time / changeRate, 0f); 
+        // Smoothly vary speed using Perlin noise
+        float noise = Mathf.PerlinNoise(Time.time / changeRate, 0f);
         currentSpeed = Mathf.Lerp(minSpeed, maxSpeed, noise);
 
-        // Move storm wall towards the target
+        // Keep Y constant so storm only follows horizontally
+        Vector3 targetPos = new Vector3(target.position.x, transform.position.y, target.position.z);
+
+        // Always move storm toward player
         transform.position = Vector3.MoveTowards(
             transform.position,
-            new Vector3(target.position.x, transform.position.y, target.position.z),
+            targetPos,
             currentSpeed * Time.deltaTime
         );
     }
