@@ -3,39 +3,45 @@ using UnityEngine;
 public class CompassController : MonoBehaviour
 {
     [Header("References")]
-    public Transform player;       // XR Rig or player root
-    public Transform targetHouse;  // The house/destination
-    public Transform needle;       // The white needle object
+    public Transform player;        // XR Rig root (the body, not just the camera)
+    public Transform targetHouse;   // The target (base / house)
+    public Transform needle;        // The needle object in compass
 
     [Header("Settings")]
-    public float rotationSpeed = 180f; // Degrees per second for smooth rotation
+    public float rotationSpeed = 180f; // Degrees per second
+    [Tooltip("Offset in degrees to correct needle alignment")]
+    public float rotationOffset = 0f;  // Manual offset for correction
 
     void Update()
     {
         if (player == null || targetHouse == null || needle == null) return;
 
-        // Direction from player to target (ignore Y)
-        Vector3 direction = targetHouse.position - player.position;
-        direction.y = 0;
+        // Get direction from player to target (ignore height difference)
+        Vector3 toTarget = targetHouse.position - player.position;
+        toTarget.y = 0f;
 
-        if (direction.sqrMagnitude < 0.01f) return; // Prevent errors if super close
+        if (toTarget.sqrMagnitude < 0.01f) return;
 
-        // Get the angle to the target relative to world forward
-        float angleToTarget = Vector3.SignedAngle(Vector3.forward, direction, Vector3.up);
+        // World-space forward direction of player (ignoring tilt)
+        Vector3 playerForward = player.forward;
+        playerForward.y = 0;
 
-        // Get player's yaw
-        float playerYaw = player.eulerAngles.y;
+        // Angle between player forward and target direction
+        float angleToTarget = Vector3.SignedAngle(playerForward, toTarget, Vector3.up);
 
-        // Compass angle relative to player forward
-        float compassAngle = angleToTarget - playerYaw;
+        // Apply offset
+        float finalAngle = -angleToTarget + rotationOffset;
 
-        // Desired rotation for needle (around Z-axis in local space)
-        Quaternion targetRotation = Quaternion.Euler(0, 0, -compassAngle);
+        // Desired rotation
+        Quaternion desiredRotation = Quaternion.Euler(0, finalAngle, 0);
+
+        // Debugging
+        Debug.Log($"AngleToTarget: {angleToTarget}, FinalAngle (with offset): {finalAngle}");
 
         // Smoothly rotate the needle
         needle.localRotation = Quaternion.RotateTowards(
             needle.localRotation,
-            targetRotation,
+            desiredRotation,
             rotationSpeed * Time.deltaTime
         );
     }

@@ -17,11 +17,12 @@ public class GameManager : MonoBehaviour
 
     [Header("Player References")]
     public MonoBehaviour locomotionScript;
+    public SandWallMover sandWallMover;   // ✅ assign your storm wall here
 
     private void Start()
     {
         timeRemaining = missionTime;
-        gameOverPanel.SetActive(false);
+        CanvasFollower.Instance.HideAllPanels();
 
         // ✅ Show all questions at start
         ShowQuiz();
@@ -31,6 +32,7 @@ public class GameManager : MonoBehaviour
     {
         if (!isGameActive) return;
 
+        // Countdown
         timeRemaining -= Time.deltaTime;
         if (timeRemaining <= 0f)
         {
@@ -38,6 +40,7 @@ public class GameManager : MonoBehaviour
             GameOver();
         }
 
+        // Update UI
         if (timerText != null)
         {
             int minutes = Mathf.FloorToInt(timeRemaining / 60);
@@ -52,8 +55,8 @@ public class GameManager : MonoBehaviour
 
         if (quizLoader != null)
         {
-            quizLoader.gameManager = this; // ✅ set reference back
-            quizLoader.ShowQuiz(0);        // start first question
+            quizLoader.gameManager = this;
+            quizLoader.ShowQuiz(0);
         }
 
         if (locomotionScript != null)
@@ -64,7 +67,6 @@ public class GameManager : MonoBehaviour
     {
         questionPanel.SetActive(false);
 
-        // ✅ Now player can move toward base
         if (locomotionScript != null)
             locomotionScript.enabled = true;
     }
@@ -74,9 +76,16 @@ public class GameManager : MonoBehaviour
         if (!isGameActive) return;
 
         isGameActive = false;
+
+        // ✅ stop storm
+        if (sandWallMover != null)
+            sandWallMover.enabled = false;
+
+        // Show win panel
         if (winPanel != null)
             winPanel.SetActive(true);
 
+        // Disable movement
         if (locomotionScript != null)
             locomotionScript.enabled = false;
 
@@ -88,6 +97,12 @@ public class GameManager : MonoBehaviour
         if (!isGameActive) return;
 
         isGameActive = false;
+
+        // ✅ stop storm
+        if (sandWallMover != null)
+            sandWallMover.enabled = false;
+
+        questionPanel.SetActive(false);
         gameOverPanel.SetActive(true);
 
         if (locomotionScript != null)
@@ -102,7 +117,6 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        // Reload the current scene
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
         );
