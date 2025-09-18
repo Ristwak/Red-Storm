@@ -1,9 +1,10 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class SandWallMover : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public Transform target;        // XR Rig (player)
+    public Transform target;        // XR Rig (player root)
     public float minSpeed = 5f;     // minimum storm speed
     public float maxSpeed = 15f;    // maximum storm speed
     public float changeRate = 2f;   // how fast speed changes
@@ -21,6 +22,10 @@ public class SandWallMover : MonoBehaviour
 
         // Start with a random speed
         currentSpeed = Random.Range(minSpeed, maxSpeed);
+
+        // Make sure collider is set as trigger
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.isTrigger = true;
     }
 
     void Update()
@@ -40,5 +45,20 @@ public class SandWallMover : MonoBehaviour
             targetPos,
             currentSpeed * Time.deltaTime
         );
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        // ✅ Check if the collided object has a CharacterController in itself or parents
+        CharacterController cc = other.GetComponentInChildren<CharacterController>();
+        if (cc != null)
+        {
+            Debug.Log("🌪 Storm caught the player (CharacterController)!");
+            FindObjectOfType<GameManager>().PlayerHitByStorm();
+        }
+        else
+        {
+            Debug.Log("Storm collided with: " + other.name);
+        }
     }
 }

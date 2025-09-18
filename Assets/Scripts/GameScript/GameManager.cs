@@ -1,92 +1,86 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Timer Settings")]
-    public float missionTime = 120f;          // total mission time in seconds
+    public float missionTime = 120f;
     private float timeRemaining;
     private bool isGameActive = true;
 
     [Header("UI References")]
-    public TMP_Text timerText;               // Timer display
-    public GameObject quizPanel;             // Assign your quiz panel (disabled by default)
-    public GameObject gameOverPanel;         // Assign your GameOver panel (disabled by default)
-    public QuizLoader quizLoader;            // Reference to QuizLoader component
-
-    [Header("Quiz Settings")]
-    public float quiz1Time = 90f;            // when first quiz should appear (seconds left)
-    public float quiz2Time = 45f;            // when second quiz should appear (seconds left)
-    private int quizIndex = 0;
-    private bool isQuizActive = false;
+    public TMP_Text timerText;
+    public GameObject questionPanel;
+    public GameObject gameOverPanel;
+    public GameObject winPanel;
+    public QuizLoader quizLoader;
 
     [Header("Player References")]
-    public MonoBehaviour locomotionScript;   // movement script (leave hand scripts alone)
+    public MonoBehaviour locomotionScript;
 
-    private float[] quizTriggerTimes;
-
-    void Start()
+    private void Start()
     {
-        // Init timer
         timeRemaining = missionTime;
         gameOverPanel.SetActive(false);
-        quizPanel.SetActive(false);
 
-        // Assign quiz times from inspector
-        quizTriggerTimes = new float[2] { quiz1Time, quiz2Time };
-        System.Array.Sort(quizTriggerTimes); // keep them in order
+        // ✅ Show all questions at start
+        ShowQuiz();
     }
 
-    void Update()
+    private void Update()
     {
         if (!isGameActive) return;
 
-        // Update timer
         timeRemaining -= Time.deltaTime;
-        if (timeRemaining <= 0)
+        if (timeRemaining <= 0f)
         {
             timeRemaining = 0;
             GameOver();
         }
 
-        // Update UI with MM:SS format
         if (timerText != null)
         {
             int minutes = Mathf.FloorToInt(timeRemaining / 60);
             int seconds = Mathf.FloorToInt(timeRemaining % 60);
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
-
-        // Trigger quizzes at your chosen times
-        if (!isQuizActive && quizIndex < quizTriggerTimes.Length && timeRemaining <= quizTriggerTimes[quizIndex])
-        {
-            ShowQuiz();
-            quizIndex++;
-        }
     }
 
     void ShowQuiz()
     {
-        isQuizActive = true;
-        quizPanel.SetActive(true);
+        questionPanel.SetActive(true);
 
         if (quizLoader != null)
-            quizLoader.ShowQuiz(quizIndex); // tell loader which quiz to show
+        {
+            quizLoader.gameManager = this; // ✅ set reference back
+            quizLoader.ShowQuiz(0);        // start first question
+        }
 
-        // Disable locomotion only (hands still work)
         if (locomotionScript != null)
             locomotionScript.enabled = false;
     }
 
     public void CloseQuiz()
     {
-        isQuizActive = false;
-        quizPanel.SetActive(false);
+        questionPanel.SetActive(false);
 
-        // Re-enable locomotion
+        // ✅ Now player can move toward base
         if (locomotionScript != null)
             locomotionScript.enabled = true;
+    }
+
+    public void PlayerWin()
+    {
+        if (!isGameActive) return;
+
+        isGameActive = false;
+        if (winPanel != null)
+            winPanel.SetActive(true);
+
+        if (locomotionScript != null)
+            locomotionScript.enabled = false;
+
+        Debug.Log("🎉 Mission Complete! You reached the base.");
     }
 
     public void GameOver()
@@ -104,5 +98,19 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Player hit by storm!");
         GameOver();
+    }
+
+    public void RestartGame()
+    {
+        // Reload the current scene
+        UnityEngine.SceneManagement.SceneManager.LoadScene(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
+        );
+    }
+
+    public void QuitGame()
+    {
+        Debug.Log("Quitting game...");
+        Application.Quit();
     }
 }

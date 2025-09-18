@@ -3,11 +3,20 @@ using UnityEngine;
 public class CanvasFollower : MonoBehaviour
 {
     [Header("References")]
-    public Transform player;         // XR Rig or player root
-    public GameObject canvasObject;  // Existing Question Canvas in the scene
+    public static CanvasFollower Instance;
+    public Transform player;             // XR Rig or player root
+    public GameObject canvasObject;      // The main canvas (always active)
+    public GameObject questionPanel;     // The panel to toggle ON/OFF
+    public GameObject gameOverPanel;     // The panel to toggle ON/OFF
+    public GameObject winPanel;          // The panel to toggle ON/OFF
 
     [Header("Settings")]
     public Vector3 offset = new Vector3(0, 1.5f, 2f); // Offset from player
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -23,15 +32,20 @@ public class CanvasFollower : MonoBehaviour
             return;
         }
 
-        // Make sure it's hidden at start
-        canvasObject.SetActive(false);
+        if (questionPanel == null)
+        {
+            Debug.LogError("CanvasFollower: Question Panel reference not set!");
+            return;
+        }
+
+        // Keep canvas active but hide questions at start
+        canvasObject.SetActive(true);
+        questionPanel.SetActive(false);
     }
 
     void Update()
     {
-        if (!canvasObject.activeSelf) return; // Only update when active
-
-        // Position canvas relative to player
+        // Always follow the player
         Vector3 targetPos = player.position
                           + player.forward * offset.z
                           + player.up * offset.y
@@ -44,15 +58,28 @@ public class CanvasFollower : MonoBehaviour
         canvasObject.transform.rotation = Quaternion.Euler(euler);
     }
 
-    // Call this to show the canvas
-    public void ShowCanvas()
+    public void HideAllPanels()
     {
-        canvasObject.SetActive(true);
+        questionPanel.SetActive(false);
+        gameOverPanel.SetActive(false);
+        winPanel.SetActive(false);
     }
 
-    // Call this to hide the canvas
-    public void HideCanvas()
+    // Call this to show the question panel
+    public void ShowQuestion()
     {
-        canvasObject.SetActive(false);
+        questionPanel.SetActive(true);
+    }
+
+    // Call this to hide the question panel
+    public void HideQuestion()
+    {
+        questionPanel.SetActive(false);
+    }
+
+    public void GameOverPanel()
+    {
+        gameOverPanel.SetActive(false);
+        questionPanel.SetActive(false);
     }
 }
