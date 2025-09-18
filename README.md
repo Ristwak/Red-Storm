@@ -62,7 +62,7 @@ Assets/
 
 1. Clone this repository:  
    ```bash
-   git clone https://github.com/Ristwak/red-storm.git
+   https://github.com/Ristwak/Red-Storm.git
 2. Open the project in Unity 2021.3 LTS (or newer).
 3. Ensure you have:
    XR Interaction Toolkit
