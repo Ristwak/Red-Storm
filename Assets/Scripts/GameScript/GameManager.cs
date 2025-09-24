@@ -6,13 +6,14 @@ public class GameManager : MonoBehaviour
     [Header("Timer Settings")]
     public float missionTime = 120f;
     private float timeRemaining;
-    private bool isGameActive = true;
+    private bool isGameActive = false;  // Game should not be active until start button is clicked
 
     [Header("UI References")]
     public TMP_Text timerText;
     public GameObject questionPanel;
     public GameObject gameOverPanel;
     public GameObject winPanel;
+    public GameObject startPanel;       // The start panel with Start and Quit buttons
     public QuizLoader quizLoader;
 
     [Header("Player References")]
@@ -21,11 +22,11 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        timeRemaining = missionTime;
-        CanvasFollower.Instance.HideAllPanels();
-
-        // ✅ Show all questions at start
-        ShowQuiz();
+        // Initially hide all panels
+        gameOverPanel.SetActive(false);
+        winPanel.SetActive(false);
+        questionPanel.SetActive(false);
+        startPanel.SetActive(true);  // Show the start panel
     }
 
     private void Update()
@@ -47,6 +48,19 @@ public class GameManager : MonoBehaviour
             int seconds = Mathf.FloorToInt(timeRemaining % 60);
             timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
         }
+    }
+
+    public void StartGame()
+    {
+        // Hide start panel
+        startPanel.SetActive(false);
+
+        // Start game functionality
+        isGameActive = true;
+        timeRemaining = missionTime;
+
+        // Start the quiz and disable movement for the player during the quiz
+        ShowQuiz();
     }
 
     void ShowQuiz()
@@ -77,7 +91,7 @@ public class GameManager : MonoBehaviour
 
         isGameActive = false;
 
-        // ✅ stop storm
+        // Stop storm
         if (sandWallMover != null)
             sandWallMover.enabled = false;
 
@@ -98,7 +112,7 @@ public class GameManager : MonoBehaviour
 
         isGameActive = false;
 
-        // ✅ stop storm
+        // Stop storm
         if (sandWallMover != null)
             sandWallMover.enabled = false;
 
