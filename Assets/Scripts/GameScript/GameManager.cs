@@ -27,13 +27,21 @@ public class GameManager : MonoBehaviour
         winPanel.SetActive(false);
         questionPanel.SetActive(false);
         startPanel.SetActive(true);  // Show the start panel
+
+        // Disable the sandstorm and timer until start
+        if (sandWallMover != null)
+            sandWallMover.enabled = false;  // Pause the sandstorm
+
+        // Disable movement
+        if (locomotionScript != null)
+            locomotionScript.enabled = false;
     }
 
     private void Update()
     {
         if (!isGameActive) return;
 
-        // Countdown
+        // Countdown timer only runs when game is active
         timeRemaining -= Time.deltaTime;
         if (timeRemaining <= 0f)
         {
@@ -41,7 +49,7 @@ public class GameManager : MonoBehaviour
             GameOver();
         }
 
-        // Update UI
+        // Update timer UI
         if (timerText != null)
         {
             int minutes = Mathf.FloorToInt(timeRemaining / 60);
@@ -50,6 +58,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // Start the game when Start button is clicked
     public void StartGame()
     {
         // Hide start panel
@@ -61,6 +70,14 @@ public class GameManager : MonoBehaviour
 
         // Start the quiz and disable movement for the player during the quiz
         ShowQuiz();
+
+        // Start the sandstorm
+        if (sandWallMover != null)
+            sandWallMover.enabled = true;  // Unpause the sandstorm
+
+        // Enable player movement
+        if (locomotionScript != null)
+            locomotionScript.enabled = true;
     }
 
     void ShowQuiz()
@@ -73,6 +90,7 @@ public class GameManager : MonoBehaviour
             quizLoader.ShowQuiz(0);
         }
 
+        // Disable player movement during quiz
         if (locomotionScript != null)
             locomotionScript.enabled = false;
     }
@@ -81,6 +99,7 @@ public class GameManager : MonoBehaviour
     {
         questionPanel.SetActive(false);
 
+        // Enable player movement after quiz
         if (locomotionScript != null)
             locomotionScript.enabled = true;
     }
@@ -119,6 +138,7 @@ public class GameManager : MonoBehaviour
         questionPanel.SetActive(false);
         gameOverPanel.SetActive(true);
 
+        // Disable movement
         if (locomotionScript != null)
             locomotionScript.enabled = false;
     }
